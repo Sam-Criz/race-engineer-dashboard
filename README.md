@@ -22,11 +22,23 @@ Simular algumas informações utilizadas por engenheiros de corrida durante uma 
 
 ## 🚀 Roadmap
 
-- [x] V0.1 Dashboard em Terminal
-- [x] V0.2 Barras de combustível
-- [x] V0.3 Interface melhorada
-- [x] V0.4 Histórico de voltas
-- [ ] V1.0 Dashboard Web
+## 🚀 Versões
+
+### V0.1
+- Primeiro protótipo em terminal.
+- Coleta de dados do carro.
+
+### V0.2
+- Organização inicial do código.
+- Primeiras funções.
+
+### V0.4
+- Refatoração completa.
+- Dashboard dividida em seções.
+- Barras de combustível e pneus.
+- Sistema DRS/ERS.
+- Mensagem do engenheiro.
+- Código modularizado.
 
 ## 👨‍💻 Autor
 
