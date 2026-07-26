@@ -9,9 +9,29 @@ Projeto pessoal criado para aprender programação e análise de dados inspirada
 - Trabalhar com gráficos
 - Evoluir até uma aplicação web
 
-Status:
-<<<<<<< HEAD
 🟢 Planejamento
-=======
-🟢 Planejamento
->>>>>>> 81c76375a84ee088e63dfc1ff9a5f1d061bf53cb
+# 🏎️ Race Engineer Dashboard
+
+Projeto desenvolvido para estudar programação e engenharia de software inspirado na telemetria da Fórmula 1.
+
+## Tecnologias
+
+- Python
+
+## Funcionalidades
+
+- Cálculo de marcha
+- RPM
+- GAP para o líder
+- GAP para o carro atrás
+- DRS
+- ERS
+- Estratégia de BOX
+
+## Próximas versões
+
+- [ ] Interface mais bonita
+- [ ] Barras de combustível
+- [ ] Barras de pneus
+- [ ] Histórico de voltas
+- [ ] Dashboard Web
