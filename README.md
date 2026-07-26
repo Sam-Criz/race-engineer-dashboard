@@ -1,37 +1,33 @@
-# Race Engineer Dashboard
-
-Projeto pessoal criado para aprender programação e análise de dados inspiradas na Fórmula 1.
-
-## Objetivos
-- Aprender Python
-- Aprender SQL
-- Criar um dashboard
-- Trabalhar com gráficos
-- Evoluir até uma aplicação web
-
-🟢 Planejamento
 # 🏎️ Race Engineer Dashboard
 
-Projeto desenvolvido para estudar programação e engenharia de software inspirado na telemetria da Fórmula 1.
+Projeto desenvolvido para aprender Python e Engenharia de Software através da criação de um Dashboard inspirado na Fórmula 1.
 
-## Tecnologias
+## 📌 Objetivo
 
-- Python
+Simular algumas informações utilizadas por engenheiros de corrida durante uma prova.
 
-## Funcionalidades
+## ✅ Funcionalidades atuais
 
-- Cálculo de marcha
-- RPM
-- GAP para o líder
+- Cálculo automático da marcha
+- RPM baseado na velocidade
+- Cálculo do GAP para o líder
 - GAP para o carro atrás
-- DRS
-- ERS
-- Estratégia de BOX
+- Estado do DRS
+- Estado do ERS
+- Estratégia de BOX baseada em pneus e combustível
 
-## Próximas versões
+## 🛠 Tecnologias
 
-- [ ] Interface mais bonita
-- [ ] Barras de combustível
-- [ ] Barras de pneus
-- [ ] Histórico de voltas
-- [ ] Dashboard Web
+- Python 3
+
+## 🚀 Roadmap
+
+- [x] V0.1 Dashboard em Terminal
+- [ ] V0.2 Barras de combustível
+- [ ] V0.3 Interface melhorada
+- [ ] V0.4 Histórico de voltas
+- [ ] V1.0 Dashboard Web
+
+## 👨‍💻 Autor
+
+Samuel
