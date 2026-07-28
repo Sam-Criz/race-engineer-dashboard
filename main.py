@@ -33,12 +33,14 @@ telemetria = {
     "DRS": "Desativado",
     "ERS": "Ativado",
     "PrevisãoPit": "parada",
+    "Voltas Feitas": 0,
+    "Voltas Totais": 0
 }
 def ler_dados():
     VelocidadeMédia =int(input("Informe a Velocidade Média do Carro:"))
     telemetria["Velocidade Média"] = (VelocidadeMédia)
     telemetria["Marcha"] = calcular_marcha(VelocidadeMédia)
-    RPM = (VelocidadeMédia * 100)
+    RPM = min(int(4000 + VelocidadeMédia * 35), 15000)
     telemetria["RPM"] = RPM
     TemperaturaMédia = float(input("Informe a Temperatura Média do Carro: "))
     telemetria["Temperatura Média"] = (TemperaturaMédia)
@@ -54,26 +56,44 @@ def ler_dados():
     TempoAtrás = float(input("Informe o Tempo do Carro Atrás: "))
     GapAtrás = TempoVolta - TempoAtrás
     telemetria["GapAtrás"] = (GapAtrás)
+    DRS = float(input("Qual a distância do carro a frente? "))
+    ERS = int(input("Ainda resta quantos % de bateria? "))
+    telemetria["DRS"] = estado_drs(DRS)
+    telemetria["ERS"] = estado_ers(ERS)
+    voltas_feitas = int(input("Informe o número de voltas já feitas: "))
+    telemetria["Voltas Feitas"] = voltas_feitas
+    voltas_totais = int(input("Informe o número total de voltas da corrida: "))
+    telemetria["Voltas Totais"] = voltas_totais
 
-def estado_sistema(valor):
-    if valor == 1:
-        return "Ativado 🟢"
-    return "Desativado 🔴"
+def estado_drs(DRS):
+    if DRS < 1.01:
+        return "AVAILABLE 🟢"
+    return "UNAVAILABLE 🔴"
 
-DRS = int(input("Informe se o DRS está Ativado (1) ou Desativado (0): "))
-ERS = int(input("Informe se o ERS está Ativado (1) ou Desativado (0): "))
-telemetria["DRS"] = estado_sistema(DRS)
-telemetria["ERS"] = estado_sistema(ERS)
+def estado_ers(ERS):
+    if ERS > 20:
+        return "AVAILABLE 🟢"
+    return "UNAVAILABLE 🔴"
 
 # Previsão de parada: se combustível baixo ou desgaste dos pneus alto
-def prever_pit(combustivel, desgaste):
-        if combustivel <= 10 or desgaste >= 80:
-            return "BOX BOX"
-        return "Sem previsão de parada"
-telemetria["PrevisãoPit"] = prever_pit(telemetria["Combustível"], telemetria["Desgaste dos Pneus"])
+def prever_pit(combustivel, desgaste, voltas_restantes):
+        if desgaste >= 75:
+            return "BOX THIS LAP"
+
+        elif combustivel <= 8:
+            return "BOX THIS LAP"
+
+        elif desgaste >=60 and voltas_restantes<5:
+            return "STAY OUT"
+
+        else:
+            return "CONTINUE"
 
 def criar_barra(valor, maximo):
     tamanho_total = 20
+
+    valor = max(0, min(valor, maximo))
+
     preenchido = int((valor / maximo) * tamanho_total)
     vazio = tamanho_total - preenchido
 
@@ -87,19 +107,86 @@ def barras(elementos):
     )
 
     barra_pneus = criar_barra(
-        elementos["Desgaste dos Pneus"],
-        100
+    100 - elementos["Desgaste dos Pneus"],
+    100
     )
     return barra_combustivel, barra_pneus
 
 def mensagem_engenheiro(elementos):
     if elementos["Desgaste dos Pneus"] >= 80:
-        return "📡 Engineer: BOX THIS LAP"
+        return "📡 Engineer: 🔴 BOX THIS LAP"
 
     elif elementos["Combustível"] <= 15:
-        return "📡 Engineer: FUEL SAVING"
+        return "📡 Engineer: 🟡 FUEL SAVING"
 
-    return "📡 Engineer: KEEP PUSHING"
+    return "📡 Engineer: 🟢 KEEP PUSHING"
+
+def alerta_temperatura(valor):
+    if valor < 80:
+        return "NORMAL"
+
+    elif 80 <= valor < 95:
+        return "WARNING"
+
+    return "CRITICAL"
+
+def alerta_combustivel(valor):
+    if valor <= 10:
+        return f"⚠️ {valor} 🔴 LOW FUEL!"
+    return f"✅ {valor} 🟢 FUEL OK"
+
+def alerta_pneus(valor):
+    if valor >= 55:
+        return f"⚠️ {valor} 🔴 TIRES WORN!"
+    return f"✅ {valor} 🟢 TIRES OK"
+
+def relatorio_combustivel(valores):
+    if valores <=10:
+        return "LOW"
+    elif valores <= 20:
+        return "NORMAL"
+    elif valores <= 35:
+        return "OK"
+    elif valores <= 50:
+        return "GOOD"
+    return "EXCELLENT"
+
+def relatorio_temperatura(valor):
+    if valor < 70:
+        return "COLD"
+
+    elif valor <= 95:
+        return "OPTIMAL"
+
+    elif valor <= 105:
+        return "WARNING"
+
+    return "CRITICAL"
+
+def relatorio_pneus(desgaste):
+    if desgaste <=10:
+        return "EXCELLENT"
+    elif desgaste <=20:
+        return "GOOD"
+    elif desgaste <=35:
+        return "NORMAL"
+    elif desgaste <=50:
+        return "WARNING"
+    return "CRITICAL"
+
+def voltas_restantes(voltas_feitas, voltas_totais):
+    voltas_restantes = voltas_totais - voltas_feitas
+    return voltas_restantes
+
+def gap1(GapLíder):
+    if GapLíder > 0:
+        return f"+{GapLíder:.3f}s"
+    return f"{GapLíder:.3f}s"
+
+def gap2(GapAtrás):
+    if GapAtrás > 0:
+        return f"+{GapAtrás:.3f}s"
+    return f"{GapAtrás:.3f}s"
 
 
 def mostrar_dashboard(elementos):
@@ -115,12 +202,15 @@ def mostrar_dashboard(elementos):
     print()
     print("🌡 MOTOR")
     print("Temperatura...........", (telemetria["Temperatura Média"]), "°C")
+    print(f"{alerta_temperatura(telemetria['Temperatura Média'])}")
     print()
     print("⛽ COMBUSTÍVEL")
-    print(f"⛽ {barra_combustivel} {elementos['Combustível']}%")
+    print(f"{barra_combustivel} {elementos['Combustível']}%")
+    print(f"{alerta_combustivel(telemetria['Combustível'])}")
     print()
     print("PNEUS")
-    print(f"🛞 {barra_pneus} {elementos['Desgaste dos Pneus']}%")
+    print(f"{barra_pneus} {100-elementos['Desgaste dos Pneus']}% restante")
+    print(f"{alerta_pneus(telemetria['Desgaste dos Pneus'])}")
     print()
     print("📡 SISTEMAS")
     print("DRS...........", elementos["DRS"])
@@ -128,12 +218,28 @@ def mostrar_dashboard(elementos):
     print()
     print("🏁 CORRIDA")
     print(f"Tempo de Volta:...........{elementos['Tempo de Volta']:.3f}s")
-    print(f"GapLíder:........... +{elementos['GapLíder']:.3f}s")
-    print(f"GapAtrás:...........{elementos['GapAtrás']:.3f}s")
+    print(f"GapLíder:........... {gap1(elementos['GapLíder'])}")
+    print(f"GapAtrás:...........{gap2(elementos['GapAtrás'])}")
     print()
     print("📢 ESTRATÉGIA")
-    print("Mensagem do Engenheiro:....", mensagem_engenheiro(telemetria))
+    print(f"Pit Strategy: {elementos['PrevisãoPit']}")
+    print(mensagem_engenheiro(telemetria))
+    print(f"FUEL: {relatorio_combustivel(telemetria['Combustível'])}")
+    print(f"TIRES: {relatorio_pneus(telemetria['Desgaste dos Pneus'])}")
+    print(f"TEMPERATURE: {relatorio_temperatura(telemetria['Temperatura Média'])}")
+    print()
+    print(f"Estimated Laps Remaining: {voltas_restantes(telemetria['Voltas Feitas'], telemetria['Voltas Totais'])}")
 
 ler_dados()
+
+telemetria["PrevisãoPit"] = prever_pit(
+    telemetria["Combustível"],
+    telemetria["Desgaste dos Pneus"],
+    voltas_restantes(
+        telemetria["Voltas Feitas"],
+        telemetria["Voltas Totais"]
+    )
+)
+
 print()
 mostrar_dashboard(telemetria)
